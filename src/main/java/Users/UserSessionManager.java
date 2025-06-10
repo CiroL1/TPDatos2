@@ -5,7 +5,7 @@ public class UserSessionManager {
     private long loginTime = 0;
 
     private final UserManager manager;
-    private final UserLoginService loginService;
+    private final UserLoginService loginService; //si es final me parece que se tendria que escribir en mayusculas
 
     public UserSessionManager(UserManager manager) {
         this.manager = manager;
@@ -14,7 +14,6 @@ public class UserSessionManager {
 
     public boolean login(int dni, String password) {
         boolean success = loginService.login(dni, password);
-
         if (success) {
             currentDni = dni;
             loginTime = System.currentTimeMillis();
@@ -28,7 +27,7 @@ public class UserSessionManager {
 
     public void logout() {
         if (currentDni == -1) {
-            System.out.println("No user is currently logged in.");
+            System.out.println("No user is currently logged in."); //se intenta hacer logout cuando nadie hizo login en primer lugar
             return;
         }
 
@@ -37,11 +36,11 @@ public class UserSessionManager {
 
         // Get current user
         User user = manager.getUserByDni(currentDni);
-        if (user != null) {
-            // Add session time
+        if (user != null) {  // si encuentra al usuario
+            // se agregan los minutos que estuvo conectado
             user.sessionTime += sessionMinutes;
 
-            // Update user type
+            // Se actualiza el tipo de usuario dependiendo del tiempo que estuvo conectado (en total)
             if (user.sessionTime > 240) {
                 user.userType = "TOP";
             } else if (user.sessionTime >= 120) {
@@ -50,7 +49,7 @@ public class UserSessionManager {
                 user.userType = "LOW";
             }
 
-            // Update user record
+            // Se actualiza la informacion del usuario en Cassandra
             manager.updateUser(user);
 
             System.out.println("User " + currentDni + " logged out. Session time added: " + sessionMinutes + " minutes.");

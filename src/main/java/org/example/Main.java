@@ -1,5 +1,8 @@
 package org.example;
+import Catalogo.*;
 import Users.*;
+import org.bson.Document;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -43,5 +46,7 @@ public class Main {
 
         // Step 5: Close connection
         userManager.close();
+
     }
+
 }

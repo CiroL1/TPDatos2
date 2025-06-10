@@ -7,11 +7,14 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+
+/*Maneja el guardado de usuarios en Cassandra, su actualizacion y demas*/
 public class UserManager {
     private static final String KEYSPACE = "test";
     private static final String TABLE = "users";
     private CqlSession session;
 
+    /*Establece una conexion con Cassandra*/
     public void connect() {
         session = CqlSession.builder()
                 .addContactPoint(new InetSocketAddress("127.0.0.1", 9042))
@@ -20,6 +23,7 @@ public class UserManager {
         createTable();
     }
 
+    /*Crea una tabla en Cassandra, se busca por DNI*/
     private void createTable() {
         session.execute("CREATE KEYSPACE IF NOT EXISTS " + KEYSPACE +
                 " WITH replication = {'class':'SimpleStrategy', 'replication_factor':1}");
@@ -33,6 +37,7 @@ public class UserManager {
                 "password text)");
     }
 
+    //Agrega un usuario a la tabla de usuarios de Cassandra que hizo antes
     public void insertUser(User u) {
         String query = "INSERT INTO " + KEYSPACE + "." + TABLE +
                 " (dni, name, address, session_time, user_type, password) VALUES (?, ?, ?, ?, ?, ?)";
@@ -40,6 +45,7 @@ public class UserManager {
         session.execute(prepared.bind(u.dni, u.name, u.address, u.sessionTime, u.userType, u.password));
     }
 
+    /*Devuelve todos los usuarios registrados en la tabla de usuarios en Cassandra*/
     public Map<Integer, User> getAllUsers() {
         Map<Integer, User> users = new HashMap<>();
         ResultSet rs = session.execute("SELECT * FROM " + KEYSPACE + "." + TABLE);
@@ -55,6 +61,7 @@ public class UserManager {
         }
         return users;
     }
+
 
     public User getUserByDni(int dni) {
         String query = "SELECT * FROM " + KEYSPACE + "." + TABLE + " WHERE dni = ?";
@@ -74,6 +81,7 @@ public class UserManager {
         }
     }
 
+
     public void updateUser(User u) {
         String query = "UPDATE " + KEYSPACE + "." + TABLE +
                 " SET name = ?, address = ?, session_time = ?, user_type = ?, password = ? WHERE dni = ?";
@@ -89,6 +97,7 @@ public class UserManager {
         System.out.println("User deleted if existed.");
     }
 
+    //chequea si la password es correcta
     public boolean checkPassword(int dni, String password) {
         String query = "SELECT password FROM " + KEYSPACE + "." + TABLE + " WHERE dni = ?";
         PreparedStatement prepared = session.prepare(query);
@@ -100,7 +109,7 @@ public class UserManager {
         return false;
     }
 
-
+    //cierra la conexion con Cassandra
     public void close() {
         if (session != null) {
             session.close();

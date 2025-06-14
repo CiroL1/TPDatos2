@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Producto {
+
+    private String codigo;
     private String nombre;
     private double precio;
     private int stock;
@@ -12,7 +14,9 @@ public class Producto {
     private List<String> imagenes;
     private List<String> comentarios;
 
-    public Producto(String nombre, double precio, int stock) {
+
+    public Producto(String codigo, String nombre, double precio, int stock) {
+        this.codigo=codigo;
         this.nombre = nombre;
         this.precio = precio;
         this.stock = stock;
@@ -47,6 +51,10 @@ public class Producto {
 
     public void agregarComentario(String comentario) {
         this.comentarios.add(comentario);
+    }
+
+    public String getCodigo() {
+        return codigo;
     }
 
     public String getNombre() {

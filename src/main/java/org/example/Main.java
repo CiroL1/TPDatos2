@@ -1,8 +1,8 @@
 package org.example;
 import Catalogo.*;
-import Users.*;
-import org.bson.Document;
-import java.util.*;
+import Users.User;
+import Users.UserManager;
+import Users.UserSessionManager;
 
 public class Main {
     public static void main(String[] args) {
@@ -46,6 +46,61 @@ public class Main {
 
         // Step 5: Close connection
         userManager.close();
+
+
+
+        /*---------------------------------------- PRUEBAS MANEJO CATALOGO ----------------------------------------*/
+
+        CatalogoManager manager = new CatalogoManager();
+
+        /*GENERO PRODUCTOS NUEVOS (hice que el constructor solo tuviera que recibir los
+        valores mas basicos - asi era mas rapido de manejar)*/
+        Producto producto=new Producto("PRODU1","Zapatillas",345.3,8);
+        Producto producto2=new Producto("PRODU2","Zapatillas",129,17);
+        Producto producto3=new Producto("PRODU3","Patines",789,78);
+        Producto producto4=new Producto("PRODU4","Billetera",345.3,8);
+
+        /*agrego un par de valores iniciales mas al producto4*/
+        producto4.agregarComentario("Muy bonita");
+        producto4.agregarComentario("Me encanta el color");
+        producto4.agregarAtributo("Disponible en color rojo, azul y marron");
+
+
+        /*AGREGO LOS PRODUCTOS AL CATALOGO*/
+        manager.agregarProducto(producto);
+        manager.agregarProducto(producto2);
+        manager.agregarProducto(producto3);
+        manager.agregarProducto(producto4);
+        System.out.println();
+
+        /*BUSCO TODOS LOS PRODUCTOS QUE TENGAN EL NOMBRE "Billetera"*/
+        System.out.println(manager.buscarProductosCompatibles("Billetera"));
+        System.out.println();
+
+        /* LISTA DE PRECIOS*/
+        System.out.println(manager.getPrecios());
+
+        /*ACTUALIZO EL PRECIO DE UNO DE LOS PRODUCTOS*/
+        manager.actualizarPrecio(producto3,567);
+        System.out.println(manager.buscarProductosCompatibles("Patines"));
+
+        /*ELIMINO UN PRODUCTO*/
+        manager.eliminarProducto(producto3);
+        System.out.println(manager.buscarProductosCompatibles("Patines"));
+
+        /*ACTUALIZO UN PAR DE VALORES*/
+        manager.actualizarImagenes(producto2,"inserte imagen idk");
+        manager.actualizarImagenes(producto2,"Otra imagen mas");
+
+        /*OBTENGO EL HISTORIAL DE CAMBIOS DEL CATALOGO*/
+        System.out.println("\n");
+        System.out.println(manager.getCambios());
+
+
+        /*CIERRO LA CONEXION CON LA BASE DE DATOS
+         (ESTO SE TIENE QUE HACER SI O SI - (si no la
+         cierro gasta recursos al pedo))*/
+        manager.cerrarConexion();
 
     }
 

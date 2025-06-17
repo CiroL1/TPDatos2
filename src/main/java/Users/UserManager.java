@@ -3,31 +3,24 @@ package Users;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.*;
 
-import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
-
-/*Maneja el guardado de usuarios en Cassandra, su actualizacion y demas*/
-public class UserManager {
+public class UserManager implements CassandraManager<User> {
     private static final String KEYSPACE = "test";
     private static final String TABLE = "users";
     private CqlSession session;
 
-    /*Establece una conexion con Cassandra*/
+    @Override
     public void connect() {
-        session = CqlSession.builder()
-                .addContactPoint(new InetSocketAddress("127.0.0.1", 9042))
-                .withLocalDatacenter("datacenter1")
-                .build();
+        session = SingletonCassandra.getSession();
         createTable();
     }
 
-    /*Crea una tabla en Cassandra, se busca por DNI*/
-    private void createTable() {
+    @Override
+    public void createTable() {
         session.execute("CREATE KEYSPACE IF NOT EXISTS " + KEYSPACE +
                 " WITH replication = {'class':'SimpleStrategy', 'replication_factor':1}");
-
         session.execute("CREATE TABLE IF NOT EXISTS " + KEYSPACE + "." + TABLE + " (" +
                 "dni int PRIMARY KEY, " +
                 "name text, " +
@@ -37,16 +30,20 @@ public class UserManager {
                 "password text)");
     }
 
-    //Agrega un usuario a la tabla de usuarios de Cassandra que hizo antes
-    public void insertUser(User u) {
+    @Override
+    public boolean insert(User u) {
+        if (getOne(u.dni) != null) {
+            return false;
+        }
         String query = "INSERT INTO " + KEYSPACE + "." + TABLE +
                 " (dni, name, address, session_time, user_type, password) VALUES (?, ?, ?, ?, ?, ?)";
         PreparedStatement prepared = session.prepare(query);
         session.execute(prepared.bind(u.dni, u.name, u.address, u.sessionTime, u.userType, u.password));
+        return true;
     }
 
-    /*Devuelve todos los usuarios registrados en la tabla de usuarios en Cassandra*/
-    public Map<Integer, User> getAllUsers() {
+    @Override
+    public Map<Integer, User> getAll() {
         Map<Integer, User> users = new HashMap<>();
         ResultSet rs = session.execute("SELECT * FROM " + KEYSPACE + "." + TABLE);
         for (Row row : rs) {
@@ -62,8 +59,8 @@ public class UserManager {
         return users;
     }
 
-
-    public User getUserByDni(int dni) {
+    @Override
+    public User getOne(int dni) {
         String query = "SELECT * FROM " + KEYSPACE + "." + TABLE + " WHERE dni = ?";
         PreparedStatement prepared = session.prepare(query);
         Row row = session.execute(prepared.bind(dni)).one();
@@ -81,38 +78,30 @@ public class UserManager {
         }
     }
 
-
-    public void updateUser(User u) {
+    @Override
+    public void update(User u) {
         String query = "UPDATE " + KEYSPACE + "." + TABLE +
                 " SET name = ?, address = ?, session_time = ?, user_type = ?, password = ? WHERE dni = ?";
         PreparedStatement prepared = session.prepare(query);
         session.execute(prepared.bind(u.name, u.address, u.sessionTime, u.userType, u.password, u.dni));
-        System.out.println("User updated.");
     }
 
-    public void deleteUserByDni(int dni) {
+    @Override
+    public void delete(int dni) {
         String query = "DELETE FROM " + KEYSPACE + "." + TABLE + " WHERE dni = ?";
         PreparedStatement prepared = session.prepare(query);
         session.execute(prepared.bind(dni));
-        System.out.println("User deleted if existed.");
     }
 
-    //chequea si la password es correcta
+    @Override
+    public void close() {
+        SingletonCassandra.closeSession();
+    }
+
     public boolean checkPassword(int dni, String password) {
         String query = "SELECT password FROM " + KEYSPACE + "." + TABLE + " WHERE dni = ?";
         PreparedStatement prepared = session.prepare(query);
         Row row = session.execute(prepared.bind(dni)).one();
-        if (row != null) {
-            String storedPassword = row.getString("password");
-            return storedPassword != null && storedPassword.equals(password);
-        }
-        return false;
-    }
-
-    //cierra la conexion con Cassandra
-    public void close() {
-        if (session != null) {
-            session.close();
-        }
+        return row != null && password.equals(row.getString("password"));
     }
 }

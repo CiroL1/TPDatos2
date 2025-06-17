@@ -1,7 +1,7 @@
 package Users;
 
 public class SessionManager {
-    private int currentDni = -1;
+    private static int currentDni = -1;
     private long loginTime = 0;
 
     private final UserManager userManager;
@@ -56,11 +56,7 @@ public class SessionManager {
         loginTime = 0;
     }
 
-    public boolean isLoggedIn() {
-        return currentDni != -1;
-    }
-
-    public int getCurrentDni() {
+    public static int getDniUsuarioActivo() {
         return currentDni;
     }
 }

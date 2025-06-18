@@ -179,6 +179,18 @@ public class CatalogoManager {
         this.mongo.close();
     }
 
+    public Producto getProductoPorCodigo(String codigo) {
+        Document doc = mongo.getProductos().find(eq("codigo", codigo)).first();
+        if (doc == null) return null;
+
+        return new Producto(
+                doc.getString("codigo"),
+                doc.getString("nombre"),
+                doc.getDouble("precio"),
+                doc.getInteger("stock")
+        );
+    }
+
 }
 
 

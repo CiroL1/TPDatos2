@@ -17,7 +17,6 @@ public class CarritoManager implements RedisManager {
         if (dni.equals("-1")) throw new IllegalStateException("No hay usuario activo en la sesión.");
         return dni;
     }
-
     @Override
     public void crearCarrito(String dni) {
         if (!redis.exists(dni)) {
@@ -25,21 +24,32 @@ public class CarritoManager implements RedisManager {
             redis.hdel(dni, "init");
         }
     }
+    private void guardarEstadoAnterior() {
+        String dni = getDniActivo();
+        String carritoKey = dni;
+        String prevKey = dni + ":prev";
 
+        Map<String, String> carritoActual = redis.hgetAll(carritoKey);
+        redis.del(prevKey);
+        if (!carritoActual.isEmpty()) {
+            redis.hset(prevKey, carritoActual);
+        }
+    }
     @Override
     public void agregarProducto(String codigoProducto, int cantidad) {
+        guardarEstadoAnterior();
         String dni = getDniActivo();
         redis.hincrBy(dni, codigoProducto, cantidad);
     }
-
     @Override
     public void eliminarProducto(String codigoProducto) {
+        guardarEstadoAnterior();
         String dni = getDniActivo();
         redis.hdel(dni, codigoProducto);
     }
-
     @Override
     public void modificarCantidad(String codigoProducto, int nuevaCantidad) {
+        guardarEstadoAnterior();
         String dni = getDniActivo();
         if (nuevaCantidad <= 0) {
             eliminarProducto(codigoProducto);
@@ -47,14 +57,47 @@ public class CarritoManager implements RedisManager {
             redis.hset(dni, codigoProducto, String.valueOf(nuevaCantidad));
         }
     }
-
     @Override
     public Map<String, String> obtenerCarrito() {
         return redis.hgetAll(getDniActivo());
     }
-
     @Override
     public void eliminarCarrito() {
         redis.del(getDniActivo());
+    }
+    public void guardarCarrito() {
+        String dni = getDniActivo();
+        String carritoKey = dni;
+        String backupKey = dni + ":backup";
+
+        Map<String, String> carritoActual = redis.hgetAll(carritoKey);
+        redis.del(backupKey);
+        if (!carritoActual.isEmpty()) {
+            redis.hset(backupKey, carritoActual);
+        }
+    }
+    public void recuperarCarrito() {
+        String dni = getDniActivo();
+        String carritoKey = dni;
+        String backupKey = dni + ":backup";
+
+        if (redis.exists(backupKey)) {
+            redis.del(carritoKey);
+            redis.hset(carritoKey, redis.hgetAll(backupKey));
+        } else {
+            throw new IllegalStateException("No hay carrito guardado previamente.");
+        }
+    }
+    public void estadoAnterior() {
+        String dni = getDniActivo();
+        String carritoKey = dni;
+        String prevKey = dni + ":prev";
+
+        if (redis.exists(prevKey)) {
+            redis.del(carritoKey);
+            redis.hset(carritoKey, redis.hgetAll(prevKey));
+        } else {
+            throw new IllegalStateException("No hay estado anterior disponible.");
+        }
     }
 }

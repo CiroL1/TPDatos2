@@ -1,5 +1,8 @@
 package org.example;
 import Catalogo.*;
+import Pedidos.ItemPedido;
+import Pedidos.Pedido;
+import Pedidos.PedidoManager;
 import Users.SessionManager;
 import Users.User;
 import Users.UserManager;
@@ -92,37 +95,71 @@ public class Main {
         /*---------------------------------------- PRUEBAS MANEJO CARRITO ----------------------------------------*/
         CarritoManager carritoManager = new CarritoManager();
 
-        // Crear carrito para el usuario logueado
+// Crear carrito para el usuario logueado
         carritoManager.crearCarrito(String.valueOf(newUser.dni));
 
-        // Agregar productos al carrito
+// Agregar productos al carrito
         System.out.println("--- AGREGANDO PRODUCTOS AL CARRITO ---");
         carritoManager.agregarProducto(producto.getCodigo(), 2);   // 2 zapatillas (PRODU1)
         carritoManager.agregarProducto(producto2.getCodigo(), 1);  // 1 zapatilla (PRODU2)
         carritoManager.agregarProducto(producto4.getCodigo(), 3);  // 3 billeteras (PRODU4)
 
-        // Mostrar carrito actual
+// Mostrar carrito actual
         System.out.println("Carrito actual:");
         System.out.println(carritoManager.obtenerCarrito());
 
-        // Modificar cantidad de un producto
+
+// Guardar el estado actual del carrito
+        System.out.println("\n--- GUARDANDO ESTADO ACTUAL DEL CARRITO ---");
+        carritoManager.guardarCarrito();
+
+
+// Modificar cantidad de un producto
         System.out.println("\n--- MODIFICANDO CANTIDAD ---");
         carritoManager.modificarCantidad(producto.getCodigo(), 5); // cambio a 5 zapatillas (PRODU1)
         System.out.println("Carrito actualizado:");
         System.out.println(carritoManager.obtenerCarrito());
 
-        // Eliminar un producto
-        System.out.println("\n--- ELIMINANDO PRODUCTO ---");
+
+// Volver al estado anterior (antes de modificar)
+        System.out.println("\n--- VOLVIENDO AL ESTADO ANTERIOR ---");
+        carritoManager.estadoAnterior();
+        System.out.println("Carrito tras volver atrás:");
+        System.out.println(carritoManager.obtenerCarrito());
+
+
+// Eliminar un producto y luego recuperar el carrito guardado previamente
+        System.out.println("\n--- ELIMINANDO UN PRODUCTO ---");
         carritoManager.eliminarProducto(producto2.getCodigo()); // elimino zapatilla (PRODU2)
         System.out.println("Carrito actualizado:");
         System.out.println(carritoManager.obtenerCarrito());
 
-        // Eliminar el carrito completo
-        System.out.println("\n--- ELIMINANDO TODO EL CARRITO ---");
-        carritoManager.eliminarCarrito();
-        System.out.println("Carrito tras eliminación:");
+        System.out.println("\n--- RECUPERANDO CARRITO GUARDADO ---");
+        carritoManager.recuperarCarrito();
+        System.out.println("Carrito restaurado desde backup:");
         System.out.println(carritoManager.obtenerCarrito());
 
+
+        /*---------------------------------------- PRUEBAS MANEJO PEDIDOS ----------------------------------------*/
+        System.out.println("\n--- GENERANDO PEDIDO DESDE EL CARRITO ---");
+
+        PedidoManager pedidoManager = new PedidoManager(userManager, carritoManager, new CatalogoManager());
+        Pedido pedido = pedidoManager.generarPedido();
+
+        System.out.println("Número de pedido: " + pedido.numeroPedido);
+        System.out.println("Cliente: " + pedido.nombreCliente);
+        System.out.println("Dirección: " + pedido.direccion);
+        System.out.println("Condición ante el IVA: " + pedido.condicionIVA);
+
+        System.out.println("Productos:");
+        for (ItemPedido item : pedido.productos) {
+            System.out.println("- " + item.nombre + " x" + item.cantidad + " @ $" + item.precioUnitario + " c/u");
+        }
+
+        System.out.printf("Total bruto: $%.2f\n", pedido.valorBruto);
+        System.out.printf("Descuento: $%.2f\n", pedido.descuento);
+        System.out.printf("Impuesto (IVA): $%.2f\n", pedido.impuesto);
+        System.out.printf("Total neto: $%.2f\n", pedido.valorNeto);
 
         // Cierre de sesión y conexión usuario
         sessionManager.logout();

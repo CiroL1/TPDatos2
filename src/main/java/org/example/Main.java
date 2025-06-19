@@ -22,6 +22,7 @@ public class Main {
         newUser.sessionTime = 0;
         newUser.userType = "LOW";
         newUser.password = "password123";
+        newUser.condicionIva = "Monotributista";
 
         // Insert user into the DB (if not already there)
         if (userManager.getOne(newUser.dni) == null) {
@@ -34,9 +35,7 @@ public class Main {
         // Step 3: Manage session
         SessionManager sessionManager = new SessionManager(userManager);
 
-        boolean loggedIn = sessionManager.login(newUser.dni, "password123");
-
-
+        sessionManager.login(newUser.dni, "password123");
 
         /*---------------------------------------- PRUEBAS MANEJO CATALOGO ----------------------------------------*/
 

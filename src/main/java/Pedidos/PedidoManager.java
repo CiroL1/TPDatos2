@@ -45,7 +45,7 @@ public class PedidoManager {
         }
 
         double descuento = calcularDescuento(totalBruto);
-        double impuesto = calcularImpuesto(totalBruto - descuento);
+        double impuesto = calcularImpuesto(totalBruto - descuento, user.condicionIva);
         double totalNeto = totalBruto - descuento + impuesto;
         carritoManager.eliminarCarrito();
 
@@ -53,7 +53,7 @@ public class PedidoManager {
                 contadorPedido++,
                 user.name,
                 user.address,
-                "Consumidor Final",
+                user.condicionIva,
                 productos,
                 totalBruto,
                 descuento,
@@ -66,7 +66,19 @@ public class PedidoManager {
         return totalBruto > 10000 ? totalBruto * 0.05 : 0;
     }
 
-    private double calcularImpuesto(double base) {
-        return base * 0.21; // IVA 21%
+    private double calcularImpuesto(double base, String condicionIva) {
+        if (condicionIva == null) return 0;
+
+        switch (condicionIva.toLowerCase()) {
+            case "responsable inscripto":
+            case "consumidor final":
+                return base * 0.21;
+            case "monotributista":
+            case "exento":
+            case "no responsable":
+                return 0;
+            default:
+                return 0; // Por si hay errores o no se especifica bien
+        }
     }
 }

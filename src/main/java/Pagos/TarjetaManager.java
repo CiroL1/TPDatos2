@@ -1,5 +1,8 @@
-package Users;
+package Pagos;
 
+import Pagos.Tarjeta;
+import Users.CassandraManager;
+import Users.SingletonCassandra;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.*;
 

@@ -7,4 +7,5 @@ public class User {
     public int sessionTime;
     public String userType;
     public String password;
+    public String condicionIva;
 }

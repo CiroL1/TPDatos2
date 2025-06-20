@@ -51,14 +51,14 @@ public class UserManager implements CassandraManager<User> {
 
     @Override
     public boolean insert(User u) {
-        if (getOne(u.dni) != null) {
+        if (getOne(u.getDni()) != null) {
             return false;
         }
-        validarCondicionIva(u.condicionIva);
+        validarCondicionIva(u.getCondicionIva());
         String query = "INSERT INTO " + KEYSPACE + "." + TABLE +
                 " (dni, name, address, session_time, user_type, password, condicion_iva) VALUES (?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement prepared = session.prepare(query);
-        session.execute(prepared.bind(u.dni, u.name, u.address, u.sessionTime, u.userType, u.password, u.condicionIva));
+        session.execute(prepared.bind(u.getDni(), u.getName(), u.getAddress(), u.getSessionTime(), u.getUserType(), u.getPassword(), u.getCondicionIva()));
         return true;
     }
 
@@ -68,14 +68,14 @@ public class UserManager implements CassandraManager<User> {
         ResultSet rs = session.execute("SELECT * FROM " + KEYSPACE + "." + TABLE);
         for (Row row : rs) {
             User u = new User();
-            u.dni = row.getInt("dni");
-            u.name = row.getString("name");
-            u.address = row.getString("address");
-            u.sessionTime = row.getInt("session_time");
-            u.userType = row.getString("user_type");
-            u.password = row.getString("password");
-            u.condicionIva = row.getString("condicion_iva");
-            users.put(u.dni, u);
+            u.setDni(row.getInt("dni"));
+            u.setName(row.getString("name"));
+            u.setAddress(row.getString("address"));
+            u.setSessionTime(row.getInt("session_time"));
+            u.setUserType(row.getString("user_type"));
+            u.setPassword(row.getString("password"));
+            u.setCondicionIva(row.getString("condicion_iva"));
+            users.put(u.getDni(), u);
         }
         return users;
     }
@@ -87,13 +87,13 @@ public class UserManager implements CassandraManager<User> {
         Row row = session.execute(prepared.bind(dni)).one();
         if (row != null) {
             User u = new User();
-            u.dni = row.getInt("dni");
-            u.name = row.getString("name");
-            u.address = row.getString("address");
-            u.sessionTime = row.getInt("session_time");
-            u.userType = row.getString("user_type");
-            u.password = row.getString("password");
-            u.condicionIva = row.getString("condicion_iva");
+            u.setDni(row.getInt("dni"));
+            u.setName(row.getString("name"));
+            u.setAddress(row.getString("address"));
+            u.setSessionTime(row.getInt("session_time"));
+            u.setUserType(row.getString("user_type"));
+            u.setPassword(row.getString("password"));
+            u.setCondicionIva(row.getString("condicion_iva"));
             return u;
         } else {
             return null;
@@ -102,11 +102,11 @@ public class UserManager implements CassandraManager<User> {
 
     @Override
     public void update(User u) {
-        validarCondicionIva(u.condicionIva);
+        validarCondicionIva(u.getCondicionIva());
         String query = "UPDATE " + KEYSPACE + "." + TABLE +
                 " SET name = ?, address = ?, session_time = ?, user_type = ?, password = ?, condicion_iva = ? WHERE dni = ?";
         PreparedStatement prepared = session.prepare(query);
-        session.execute(prepared.bind(u.name, u.address, u.sessionTime, u.userType, u.password, u.condicionIva, u.dni));
+        session.execute(prepared.bind(u.getName(), u.getAddress(), u.getSessionTime(), u.getUserType(), u.getPassword(), u.getCondicionIva(), u.getDni()));
     }
 
     @Override

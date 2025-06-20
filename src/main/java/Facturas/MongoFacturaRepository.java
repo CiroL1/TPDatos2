@@ -25,28 +25,28 @@ public class MongoFacturaRepository {
     public void guardarFactura(Factura factura) {
         Document facturaDoc = new Document()
                 .append("_id", new ObjectId())
-                .append("numeroFactura", factura.numeroFactura)
-                .append("nombreCliente", factura.nombreCliente)
-                .append("direccion", factura.direccion)
-                .append("condicionIva", factura.condicionIva)
-                .append("fechaHora", factura.fechaHora)
-                .append("empleadoFacturador", factura.empleadoFacturador)
-                .append("montoTotal", factura.montoTotal)
-                .append("metodoPago", factura.metodoPago.getClass().getSimpleName())
-                .append("detallePedido", generarListaProductos(factura.pedido));
+                .append("numeroFactura", factura.getNumeroFactura())
+                .append("nombreCliente", factura.getNombreCliente())
+                .append("direccion", factura.getDireccion())
+                .append("condicionIva", factura.getCondicionIva())
+                .append("fechaHora", factura.getFechaHora())
+                .append("empleadoFacturador", factura.getEmpleadoFacturador())
+                .append("montoTotal", factura.getMontoTotal())
+                .append("metodoPago", factura.getMetodoPago().getClass().getSimpleName())
+                .append("detallePedido", generarListaProductos(factura.getPedido()));
 
         collection.insertOne(facturaDoc);
     }
 
     private List<Document> generarListaProductos(Pedido pedido) {
         List<Document> productos = new ArrayList<>();
-        for (ItemPedido item : pedido.productos) {
+        for (ItemPedido item : pedido.getProductos()) {
             productos.add(new Document()
-                    .append("codigo", item.codigo)
-                    .append("nombre", item.nombre)
-                    .append("cantidad", item.cantidad)
-                    .append("precioUnitario", item.precioUnitario)
-                    .append("total", item.cantidad * item.precioUnitario));
+                    .append("codigo", item.getCodigo())
+                    .append("nombre", item.getNombre())
+                    .append("cantidad", item.getCantidad())
+                    .append("precioUnitario", item.getPrecioUnitario())
+                    .append("total", item.getCantidad() * item.getPrecioUnitario()));
         }
         return productos;
     }

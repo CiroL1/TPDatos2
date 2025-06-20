@@ -34,20 +34,20 @@ public class SessionManager {
 
         User user = userManager.getOne(currentDni);
         if (user != null) {
-            user.sessionTime += sessionMinutes;
+            user.setSessionTime(user.getSessionTime()+sessionMinutes);
 
-            if (user.sessionTime > 240) {
-                user.userType = "TOP";
-            } else if (user.sessionTime >= 120) {
-                user.userType = "MEDIUM";
+            if (user.getSessionTime() > 240) {
+                user.setUserType("TOP");
+            } else if (user.getSessionTime() >= 120) {
+                user.setUserType("MEDIUM");
             } else {
-                user.userType = "LOW";
+                user.setUserType("LOW");
             }
 
             userManager.update(user);
 
             System.out.println("User " + currentDni + " logged out. Session time added: " + sessionMinutes + " minutes.");
-            System.out.println("Updated user type: " + user.userType);
+            System.out.println("Updated user type: " + user.getUserType());
         } else {
             System.out.println("User not found to update session time.");
         }

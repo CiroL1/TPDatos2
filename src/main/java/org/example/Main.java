@@ -22,15 +22,15 @@ public class Main {
 
         // === 2. USUARIO DE PRUEBA ===
         User newUser = new User();
-        newUser.dni = 123456789;
-        newUser.name = "John Doe";
-        newUser.address = "123 Main St";
-        newUser.sessionTime = 0;
-        newUser.userType = "LOW";
-        newUser.password = "password123";
-        newUser.condicionIva = "Monotributista";
+        newUser.setDni(123456789);
+        newUser.setName("John Doe");
+        newUser.setAddress("123 Main St");
+        newUser.setSessionTime(0);
+        newUser.setUserType("LOW");
+        newUser.setPassword("password123");
+        newUser.setCondicionIva("Monotributista");
 
-        if (userManager.getOne(newUser.dni) == null) {
+        if (userManager.getOne(newUser.getDni()) == null) {
             userManager.insert(newUser);
             System.out.println("User created.");
         } else {
@@ -38,12 +38,12 @@ public class Main {
         }
 
         SessionManager sessionManager = new SessionManager(userManager);
-        sessionManager.login(newUser.dni, "password123");
+        sessionManager.login(newUser.getDni(), "password123");
 
         // === 3. TARJETA DE PRUEBA ===
         Tarjeta tarjeta = new Tarjeta(
                 Tarjeta.Tipo.CREDITO,
-                newUser.dni,
+                newUser.getDni(),
                 LocalDate.of(2030, 1, 1),
                 "999",
                 "John Doe",
@@ -62,7 +62,7 @@ public class Main {
         catalogoManager.agregarProducto(producto4);
 
         // === 5. CARRITO ===
-        carritoManager.crearCarrito(String.valueOf(newUser.dni));
+        carritoManager.crearCarrito(String.valueOf(newUser.getDni()));
         carritoManager.agregarProducto(producto1.getCodigo(), 2);
         carritoManager.agregarProducto(producto2.getCodigo(), 1);
         carritoManager.agregarProducto(producto4.getCodigo(), 3);
@@ -74,7 +74,7 @@ public class Main {
         // === 7. PROCESAR MÉTODO DE PAGO ===
         PagoManager pagoManager = new PagoManager(tarjetaManager);
         MetodoPago metodoPago = MetodoPagoFactory.crearMetodoPago("tarjeta_credito", pagoManager, tarjeta.getNumeroTarjeta());
-        boolean aprobado = metodoPago.procesarPago(pedido.valorNeto);
+        boolean aprobado = metodoPago.procesarPago(pedido.getValorNeto());
 
         if (!aprobado) {
             System.out.println("El pago no pudo ser procesado (saldo insuficiente).");

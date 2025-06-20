@@ -23,9 +23,9 @@ public class FacturaManager {
         }
 
         return new Factura(
-                user.name,
-                user.address,
-                user.condicionIva != null ? user.condicionIva : "No especificada",
+                user.getName(),
+                user.getAddress(),
+                user.getCondicionIva() != null ? user.getCondicionIva():"No especificada",
                 pedido,
                 metodoPago,
                 empleadoFacturador

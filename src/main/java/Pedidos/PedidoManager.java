@@ -45,15 +45,15 @@ public class PedidoManager {
         }
 
         double descuento = calcularDescuento(totalBruto);
-        double impuesto = calcularImpuesto(totalBruto - descuento, user.condicionIva);
+        double impuesto = calcularImpuesto(totalBruto - descuento, user.getCondicionIva());
         double totalNeto = totalBruto - descuento + impuesto;
         carritoManager.eliminarCarrito();
 
         return new Pedido(
                 contadorPedido++,
-                user.name,
-                user.address,
-                user.condicionIva,
+                user.getName(),
+                user.getAddress(),
+                user.getCondicionIva(),
                 productos,
                 totalBruto,
                 descuento,

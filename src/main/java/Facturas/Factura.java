@@ -8,17 +8,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Factura {
-    private static int contador = 1;
+    public static int contador = 1;
 
-    private int numeroFactura;
-    private String nombreCliente;
-    private String direccion;
-    private String condicionIva;
-    private Pedido pedido;
-    private MetodoPago metodoPago;
-    private String fechaHora;
-    private double montoTotal;
-    private String empleadoFacturador;
+    public int numeroFactura;
+    public String nombreCliente;
+    public String direccion;
+    public String condicionIva;
+    public Pedido pedido;
+    public MetodoPago metodoPago;
+    public String fechaHora;
+    public double montoTotal;
+    public String empleadoFacturador;
 
     public Factura(String nombreCliente, String direccion, String condicionIva, Pedido pedido, MetodoPago metodoPago, String empleadoFacturador) {
         this.numeroFactura = contador++;

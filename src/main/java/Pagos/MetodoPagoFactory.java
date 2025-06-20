@@ -2,17 +2,13 @@ package Pagos;
 
 public class MetodoPagoFactory {
 
-    private PagoManager pagoManager;
-
-    public MetodoPagoFactory(PagoManager pagoManager) {
-        this.pagoManager = pagoManager;
-    }
-
-    public MetodoPago crearMetodoPago(String tipo, Integer numeroTarjeta) {
+    public static MetodoPago crearMetodoPago(String tipo, PagoManager pagoManager, Integer numeroTarjeta) {
         switch (tipo.toLowerCase()) {
             case "tarjeta_credito":
             case "tarjeta_debito":
-                if (numeroTarjeta == null) throw new IllegalArgumentException("Número de tarjeta requerido");
+                if (numeroTarjeta == null) {
+                    throw new IllegalArgumentException("Número de tarjeta requerido para tarjeta");
+                }
                 return new PagoTarjeta(pagoManager, numeroTarjeta);
 
             case "efectivo":
@@ -22,7 +18,7 @@ public class MetodoPagoFactory {
                 return new PagoPuntoRetiro();
 
             default:
-                throw new IllegalArgumentException("Tipo de pago desconocido");
+                throw new IllegalArgumentException("Tipo de pago desconocido: " + tipo);
         }
     }
 }

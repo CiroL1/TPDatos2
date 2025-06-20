@@ -23,6 +23,7 @@ public class FacturaManager {
         }
 
         return new Factura(
+                user.getDni(),
                 user.getName(),
                 user.getAddress(),
                 user.getCondicionIva() != null ? user.getCondicionIva():"No especificada",

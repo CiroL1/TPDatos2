@@ -23,9 +23,9 @@ public class Main {
         // === 2. USUARIO DE PRUEBA ===
         User newUser = new User();
         newUser.setDni(123456789);
-        newUser.setName("John Doe");
+        newUser.setName("Carlos Test");
         newUser.setAddress("123 Main St");
-        newUser.setSessionTime(0);
+        newUser.setSessionTime(12000);
         newUser.setUserType("LOW");
         newUser.setPassword("password123");
         newUser.setCondicionIva("Monotributista");
@@ -46,7 +46,7 @@ public class Main {
                 newUser.getDni(),
                 LocalDate.of(2030, 1, 1),
                 "999",
-                "John Doe",
+                "Carlos Test",
                 30000.0
         );
         tarjeta.setNumeroTarjeta(999999);

@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Factura {
     public static int contador = 1;
+    private int dniCliente;
 
     private int numeroFactura;
     private String nombreCliente;
@@ -20,8 +21,9 @@ public class Factura {
     private double montoTotal;
     private String empleadoFacturador;
 
-    public Factura(String nombreCliente, String direccion, String condicionIva, Pedido pedido, MetodoPago metodoPago, String empleadoFacturador) {
+    public Factura(int dniCliente, String nombreCliente, String direccion, String condicionIva, Pedido pedido, MetodoPago metodoPago, String empleadoFacturador) {
         this.numeroFactura = contador++;
+        this.dniCliente = dniCliente;
         this.nombreCliente = nombreCliente;
         this.direccion = direccion;
         this.condicionIva = condicionIva;
@@ -48,7 +50,7 @@ public class Factura {
     @Override
     public String toString() {
         return "Factura #" + numeroFactura + "\n" +
-                "Cliente: " + nombreCliente + "\n" +
+                "Cliente: " + nombreCliente + " DNI:  " + dniCliente + "\n" +
                 "Dirección: " + direccion + "\n" +
                 "Condición IVA: " + condicionIva + "\n" +
                 "Fecha y Hora: " + fechaHora + "\n" +
@@ -61,7 +63,9 @@ public class Factura {
                 "Impuesto (IVA): $" + pedido.getImpuesto() + "\n" +
                 "TOTAL A PAGAR: $" + montoTotal + "\n";
     }
-
+    public int getDniCliente(){
+        return dniCliente;
+    }
     public int getNumeroFactura() {
         return numeroFactura;
     }

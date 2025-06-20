@@ -12,20 +12,6 @@ services:
     volumes:
       - cassandra_data:/var/lib/cassandra
 
-  neo4j:
-    image: neo4j:5.13
-    container_name: neo4j
-    ports:
-      - "7474:7474"     # HTTP Browser
-      - "7687:7687"     # Bolt protocol
-    environment:
-      - NEO4J_AUTH=neo4j/test1234    # usuario:contraseña
-    volumes:
-      - neo4j_data:/data
-      - neo4j_logs:/logs
-      - neo4j_import:/import
-      - neo4j_plugins:/plugins
-
   redis:
     image: redis:7
     container_name: redis

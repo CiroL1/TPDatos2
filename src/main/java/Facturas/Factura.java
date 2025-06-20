@@ -74,10 +74,6 @@ public class Factura {
         return nombreCliente;
     }
 
-    public static int getContador() {
-        return contador;
-    }
-
     public String getCondicionIva() {
         return condicionIva;
     }

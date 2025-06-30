@@ -28,7 +28,7 @@ public class PedidoManager {
         User user = userManager.getOne((int) dni);
 
         if (user == null) throw new IllegalStateException("Usuario no encontrado.");
-        Map<String, String> carrito = carritoManager.obtenerCarrito();
+        Map<String, String> carrito = carritoManager.obtenerCarrito(String.valueOf(user.getDni()));
 
         List<ItemPedido> productos = new ArrayList<>();
         double totalBruto = 0;

@@ -1,2 +1,0 @@
-El catalogo usa Mongo y la conexion la hice usando la dependencia Maven porque el docker era muy pesado para mi laptop y no me lo pude descargar
-asi que si queres que las funciones del catalogo te funcionen tenes que tener descargado y corriendo el Mongo en la pc directamente 

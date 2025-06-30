@@ -17,7 +17,7 @@ public class MongoFacturaRepository {
     private final MongoCollection<Document> collection;
 
     public MongoFacturaRepository() {
-        mongoClient = MongoClients.create("mongodb://localhost:27017"); // Cambiar si tu URI es distinta
+        mongoClient = MongoClients.create("mongodb://localhost:27017");
         database = mongoClient.getDatabase("facturacion");
         collection = database.getCollection("facturas");
     }
@@ -33,6 +33,8 @@ public class MongoFacturaRepository {
                 .append("empleadoFacturador", factura.getEmpleadoFacturador())
                 .append("montoTotal", factura.getMontoTotal())
                 .append("metodoPago", factura.getMetodoPago().getClass().getSimpleName())
+                .append("impuestos", factura.getPedido().getImpuesto())
+                .append("descuentos", factura.getPedido().getDescuento())
                 .append("detallePedido", generarListaProductos(factura.getPedido()));
 
         collection.insertOne(facturaDoc);
@@ -49,6 +51,37 @@ public class MongoFacturaRepository {
                     .append("total", item.getCantidad() * item.getPrecioUnitario()));
         }
         return productos;
+    }
+
+    public void obtenerTodasLasFacturas() {
+        FindIterable<Document> docs = collection.find();
+
+        for (Document doc : docs) {
+            System.out.println("Factura #" + doc.getInteger("numeroFactura"));
+            System.out.println("Cliente: " + doc.getString("nombreCliente"));
+            System.out.println("Dirección: " + doc.getString("direccion"));
+            System.out.println("Condición IVA: " + doc.getString("condicionIva"));
+            System.out.println("Fecha y Hora: " + doc.getString("fechaHora"));
+            System.out.println("Método de pago: " + doc.getString("metodoPago"));
+            System.out.println("Empleado que facturó: " + doc.getString("empleadoFacturador"));
+            System.out.println("Monto Total: $" + doc.getDouble("montoTotal"));
+
+            System.out.println("Detalle del pedido:");
+            List<Document> detallePedido = (List<Document>) doc.get("detallePedido");
+            System.out.println("Impuestos Aplicados: " + doc.getDouble(("impuestos")));
+            System.out.println("Descuentos Aplicados: " + doc.getDouble(("descuentos")));
+            for (Document item : detallePedido) {
+                System.out.println("- " + item.getString("nombre") +
+                        " x" + item.getInteger("cantidad") +
+                        " @ $" + item.getDouble("precioUnitario") +
+                        " = $" + item.getDouble("total"));
+            }
+            System.out.println("-----------------------------");
+        }
+    }
+
+    public void borrarTodo(){
+        collection.deleteMany(new Document());
     }
 
     public void cerrarConexion() {

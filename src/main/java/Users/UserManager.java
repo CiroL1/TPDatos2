@@ -13,8 +13,6 @@ public class UserManager implements CassandraManager<User> {
     private static final String KEYSPACE = "test";
     private static final String TABLE = "users";
     private CqlSession session;
-
-    // Condiciones válidas de IVA en Argentina
     private static final Set<String> CONDICIONES_IVA_VALIDAS = new HashSet<>(Arrays.asList(
             "Responsable Inscripto",
             "Monotributista",
